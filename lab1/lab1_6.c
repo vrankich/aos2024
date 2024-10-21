@@ -66,11 +66,17 @@ int main(int argc, char* argv[]) {
     char *messages[] = {"lera1\n", "lera2\n", "lera3\n"};
     if (write_to_file(fd, messages) < -1) {
         perror("couldn't write messages to the file");
-        close(fd);
-        return 3;
+        if (close(fd) == -1) {
+            perror("couldn't close the file");
+            return 3;
+        }
+        return 4;
     }
     fprintf(stdout, "messages were successfully written to the file %s\n", filename);
-    close(fd);
+    if (close(fd) == -1) {
+        perror("couldn't close the file");
+        return 5;
+    }
 
     return 0;
 }
