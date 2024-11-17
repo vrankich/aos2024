@@ -5,11 +5,16 @@
 #include <errno.h>
 #include <string.h>
 
-int write_to_file(int fd, char *msgs[]) {
-if (write(fd, msgs[2], strlen(msgs[2])) < 0) {
+int write_to_file(int fd, char *msgs[], char *filename) {
+    if (write(fd, msgs[2], strlen(msgs[2])) < 0) {
         perror("couldn't write messageto the file");
         return -1;
     }
+    char command[124];
+    sprintf(command, "cat %s", filename);
+
+    printf("----------\n");
+    system(command);
 
     // move the file pointer to the start of the file
     if (lseek(fd, 0, SEEK_SET) == -1) {
@@ -22,12 +27,18 @@ if (write(fd, msgs[2], strlen(msgs[2])) < 0) {
         perror("couldn't write message to the file");
         return -3;
     }
+        printf("----------\n");
+
+    system(command);
 
     // add new message
     if (write(fd, msgs[2], strlen(msgs[2])) < 0) {
         perror("couldn't write message to the file");
         return -4;
     }
+    printf("----------\n");
+
+    system(command);
 
     // move the file pointer to the start of the last message
     if (lseek(fd, -strlen(msgs[2]), SEEK_CUR) < 0) {
@@ -40,12 +51,18 @@ if (write(fd, msgs[2], strlen(msgs[2])) < 0) {
         perror("couldn't write message to the file");
         return -6;
     }
+    printf("----------\n");
+
+    system(command);
 
     // write last message to the file
     if (write(fd, msgs[2], strlen(msgs[2])) < 0) {
         perror("couldn't write message to the file");
         return -7;
     }
+    printf("----------\n");
+
+    system(command);
 
     return 1;
 }
@@ -64,7 +81,7 @@ int main(int argc, char* argv[]) {
     }
 
     char *messages[] = {"lera1\n", "lera2\n", "lera3\n"};
-    if (write_to_file(fd, messages) < -1) {
+    if (write_to_file(fd, messages, filename) < -1) {
         perror("couldn't write messages to the file");
         close(fd);
         return 3;

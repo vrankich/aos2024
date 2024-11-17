@@ -47,6 +47,13 @@ if (write(fd, msgs[2], strlen(msgs[2])) < 0) {
         return -7;
     }
 
+    // move the file pointer to the start of the last message
+    if (lseek(fd, 15000, SEEK_CUR) < 0) {
+        perror("couldn't move the file pointer");
+        return -5;
+    }
+    write(fd, msgs[2], strlen(msgs[2]));
+
     return 1;
 }
 

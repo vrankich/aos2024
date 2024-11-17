@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
 		return 3;
 	}
 	write_to_file(fd);
+	printf("fd = %d\n", fd);
 
 	fd = open(filename, O_RDONLY);
 	char buf[1024];
@@ -41,7 +42,7 @@ int main(int argc, char *argv[]) {
 		return 4;
 	}
 	printf("Message:\n%s\n", buf);
-	close(fd);
+	printf("fd = %d\n", fd);
 
 	fd = open(filename, O_RDWR);
 	printf("fd = %d\n", fd);
