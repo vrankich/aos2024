@@ -1,57 +1,41 @@
-#define _XOPEN_SOURCE 700
-
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <fcntl.h>
 #include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
-
-void sync_procs(pid_t pid_input) {
-    pid_t pid = getpid();
-    sigset_t sigset, empty_sigset;
-    sigaddset(&sigset, SIGUSR1);
-    sigemptyset(&empty_sigset);
-    sigprocmask(SIG_BLOCK, &sigset, NULL);
-
-    if (pid < pid_input) {
-        // wait for SIGUSR1
-        sigsuspend(&empty_sigset);
-    }
-
-    while(1) {
-        printf("%d\n", pid);
-        sleep(3);
-        kill(pid_input, SIGUSR1);
-        sigsuspend(&empty_sigset);
-    }
-}
 
 void handler(int sig) {
-    if (sig == SIGUSR1) {
-        printf("got SIGUSR1\n");
-    } else { 
-        SIG_DFL;
-    }
+    printf("child (PID=%d) in handler\n", getpid());
 }
 
 int main() {
     struct sigaction sa;
     sa.sa_handler = handler;
-    sa.sa_flags = 0;
-    sigemptyset(&sa.sa_mask);
     sigaction(SIGUSR1, &sa, NULL);
 
-    int parent_pid = getpid();
-    int child_pid = fork();
-    if (child_pid == 0) {
-        // child
-        sync_procs(parent_pid);
-    } else {
-        // parent
-        synced_procs(child_pid);
+    for (int i = 0; i < 5; ++i) {
+        int pid = fork();
+        if (pid < 0) {
+            perror("fork");
+            exit(1);
+        }
+        if (pid > 0) {
+            printf("process PID=%d created child PID=%d\n", getpid(), pid);
+            sleep(2);
+        } else {
+            sigset_t blockset, emptyset;
+            sigemptyset(&blockset);
+            sigemptyset(&emptyset);
+            sigaddset(&blockset, SIGUSR1);
+            sigprocmask(SIG_BLOCK, &blockset, NULL); // block SIGUSR1
+            sigsuspend(&emptyset); // wait for signal
+
+            exit(0);
+        }
     }
+
+    printf("parent process PID=%d sends SIGUSR1\n", getpid());
+    kill(0, SIGUSR1);
 
     return 0;
 }
