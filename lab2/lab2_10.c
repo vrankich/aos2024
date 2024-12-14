@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     if (fork_res != 0) {
         printf("Parent process parameters:\n");
         for (int i = 0; i < argc; i++) {
-             printf("%s\n", argv[i]);
+            printf("%s\n", argv[i]);
         }
 
         printf("Environment:\n");
