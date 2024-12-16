@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 
     Message request, response;
     while (1) {
-        if (msgrcv(msgid, &request, sizeof(request.data), 0, 0) == -1) {
+        if (msgrcv(msgid, &request, sizeof(request), 0, 0) == -1) {
             perror("msgrcv");
             continue;
         } else {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
         response.type = 1;
         strcpy(response.data, "hello from server");
-        if (msgsnd(request.type, &response, sizeof(response.data), 0) == -1) {
+        if (msgsnd(request.type, &response, sizeof(response), 0) == -1) {
             perror("msgsnd");
             continue;
         }

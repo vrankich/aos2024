@@ -53,14 +53,14 @@ int main(int argc, char *argv[]) {
     while (1) {
         request.type = client_msgid;
         strcpy(request.data, "hello from client");
-        if (msgsnd(server_msgid, &request, sizeof(request.data), 0) == -1) {
+        if (msgsnd(server_msgid, &request, sizeof(request), 0) == -1) {
             perror("msgsnd");
             msgctl(client_msgid, IPC_RMID, NULL);
             return 1;
         }
         printf("client sent a message to server\n");
 
-        if (msgrcv(client_msgid, &response, sizeof(response.data), 0, 0) == -1) {
+        if (msgrcv(client_msgid, &response, sizeof(response), 0, 0) == -1) {
             perror("msgrcv");
             msgctl(client_msgid, IPC_RMID, NULL);
             return 1;
